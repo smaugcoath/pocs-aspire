@@ -4,8 +4,11 @@ var builder = DistributedApplication.CreateBuilder(args);
 var cache = builder.AddRedis("cache")
     .WithRedisInsight();
 
-var postgres = builder.AddPostgres("postgres")
-                      .WithPgAdmin();
+var postgres = builder
+    .AddPostgres("postgres")
+    .WithImage("postgres")
+    .WithImageTag("15")
+    .WithPgAdmin();
 
 var postgresDb = postgres
     //.WithDataVolume(isReadOnly: false)

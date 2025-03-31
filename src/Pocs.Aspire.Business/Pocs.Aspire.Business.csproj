@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-	<ItemGroup>
-		<InternalsVisibleTo Include="Pocs.Aspire.Business.Tests.Unit" />
-	</ItemGroup>
+    <ItemGroup>
+	    <InternalsVisibleTo Include="Pocs.Aspire.Business.Tests.Unit" />
+    </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
