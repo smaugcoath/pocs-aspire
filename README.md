@@ -188,7 +188,7 @@ The following items represent future development directions for this POC project
 [api-versioning]: https://github.com/dotnet/aspnet-api-versioning
 [fluent-validation]: https://docs.fluentvalidation.net/
 [swashbuckle]: https://github.com/domaindrivendev/Swashbuckle.AspNetCore
-[integration-testing]: https://dotnet.testcontainers.org/
+[testcontainers]: https://dotnet.testcontainers.org/
 [shouldly]: https://docs.shouldly.org/
 
 [clean-architecture]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
