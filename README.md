@@ -99,40 +99,42 @@ dotnet run --project src/Pocs.Aspire.AppHost
 The following items represent future development directions for this POC project:
 
 1. **Authentication and Authorization**
-   - Implement identity provider integration
-   - Add role-based access control
-   - Secure API endpoints
+   - [ ] Implement identity provider integration
+   - [ ] Add role-based access control
+   - [ ] Secure API endpoints
 
 1. **Advanced Testing**
-   - Expand unit test coverage
-   - Add integration tests using test containers
-   - Implement E2E testing
+   - [ ] Expand unit test coverage
+   - [ ] Add integration tests using test containers
+   - [ ] Implement E2E testing
+   - [ ] Implement mutational testing
+   - [ ] Implement architectural testing
 
 1. **CI/CD Pipeline**
-   - Set up GitHub Actions workflows
-   - Implement automated testing
-   - Configure container publishing
+   - [ ] Set up GitHub Actions workflows
+   - [ ] Implement automated testing
+   - [ ] Configure container publishing
+   - [ ] Add static analysis tools
 
 1. **Event-Driven Architecture**
-   - Implement secondary service to enable inter service communication exploration.
-   - Implement message queues or event bus
-   - Create event-based communication between services
-   - Add event sourcing for key domains
+   - [ ] Implement secondary service to enable inter service communication exploration
+   - [ ] Implement message queues or event bus
+   - [ ] Create event-based communication between services
+   - [ ] Add event sourcing for key domains
 
 1. **Performance Optimization**
-   - Implement comprehensive benchmarking
-   - Optimize query patterns
-   - Add advanced caching strategies
+   - [ ] Implement comprehensive benchmarking
+   - [ ] Add advanced caching strategies
 
 1. **Advanced Deployment**
-   - Kubernetes deployment configuration
-   - Infrastructure as Code templates
-   - Multi-environment configuration
+   - [ ] Kubernetes deployment configuration
+   - [ ] Infrastructure as Code templates
+   - [ ] Multi-environment configuration
+1. **Developers Experience / QOL***
+   - [ ] Enable Hot Reload
+   - [ ] Autogeneration of clients for multiple technologies based on OpenAPI specification
+   - [ ] Integration with Application Performance Monitoring (e.g., Prometheus, Grafana)
 
-1. **Extended Monitoring**
-   - Custom metrics collection
-   - Advanced alerting
-   - Dashboard customization
 
 ## Links of Interest
 
