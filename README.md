@@ -130,7 +130,7 @@ The following items represent future development directions for this POC project
    - [ ] Kubernetes deployment configuration
    - [ ] Infrastructure as Code templates
    - [ ] Multi-environment configuration
-1. **Developers Experience / QOL***
+1. **Developers Experience / QOL**
    - [ ] Enable Hot Reload
    - [ ] Autogeneration of clients for multiple technologies based on OpenAPI specification
    - [ ] Integration with Application Performance Monitoring (e.g., Prometheus, Grafana)
