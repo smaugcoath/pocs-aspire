@@ -134,6 +134,12 @@ The following items represent future development directions for this POC project
    - [ ] Enable Hot Reload
    - [ ] Autogeneration of clients for multiple technologies based on OpenAPI specification
    - [ ] Integration with Application Performance Monitoring (e.g., Prometheus, Grafana)
+1. **Documentation**
+   - [ ] Autogenerate documentation wiki based on XML comments
+   - [ ] Better documentation for the OpenAPI 
+ 
+1. **Upgrades**
+   - [ ] Upgrade to .Net 9
 
 
 ## Links of Interest
