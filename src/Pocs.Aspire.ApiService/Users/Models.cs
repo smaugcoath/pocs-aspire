@@ -8,8 +8,8 @@ namespace Pocs.Aspire.ApiService.Users;
 /// <summary>
 /// Represents the response returned after creating a new user.
 /// </summary>
-/// <param name="id">The unique identifier of the created user.</param>
-public record CreateUserResponse(Guid id);
+/// <param name="Id">The unique identifier of the created user.</param>
+public record CreateUserResponse(Guid Id);
 
 /// <summary>
 /// Represents the request data needed to create a new user.
