@@ -152,12 +152,13 @@ The following items represent future development directions for this POC project
 - [Asp.Versioning.Mvc][api-versioning] - API versioning
 - [FluentValidation][fluent-validation] - Validation library
 - [Swashbuckle.AspNetCore][swashbuckle] - Swagger/OpenAPI documentation
+- [Testcontainers][testcontainers] - Defines test dependencies by as code
+- [Shouldly][shouldly] - Fluent API assertion framework
 
 ### Architecture References
 - [Clean Architecture][clean-architecture]
 - [Microservices Architecture][microservices]
 
-## References
 
 [domain-readme]: ./src/Pocs.Aspire.Domain/README.md
 [business-readme]: ./src/Pocs.Aspire.Business/README.md
@@ -179,6 +180,11 @@ The following items represent future development directions for this POC project
 [api-versioning]: https://github.com/dotnet/aspnet-api-versioning
 [fluent-validation]: https://docs.fluentvalidation.net/
 [swashbuckle]: https://github.com/domaindrivendev/Swashbuckle.AspNetCore
+[integration-testing]: https://dotnet.testcontainers.org/
+[shouldly]: https://docs.shouldly.org/
 
 [clean-architecture]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [microservices]: https://microservices.io/
+
+
+

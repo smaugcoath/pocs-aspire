@@ -21,7 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C2AE67F7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocs.Aspire.Business.Tests.Unit", "tests\Pocs.Aspire.Business.Tests.Unit\Pocs.Aspire.Business.Tests.Unit.csproj", "{AF6DC058-A1D4-48E2-9918-E221B61CF16D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pocs.Aspire.Infrastructure.Tests.Integration", "tests\Pocs.Aspire.Infrastructure.Tests.Integration\Pocs.Aspire.Infrastructure.Tests.Integration.csproj", "{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocs.Aspire.Infrastructure.Tests.Integration", "tests\Pocs.Aspire.Infrastructure.Tests.Integration\Pocs.Aspire.Infrastructure.Tests.Integration.csproj", "{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B32FE43E-BB73-4694-BFF1-D4AC92010DC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
