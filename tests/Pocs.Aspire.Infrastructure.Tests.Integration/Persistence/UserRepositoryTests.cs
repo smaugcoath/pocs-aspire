@@ -20,9 +20,6 @@ public class UserRepositoryTests : IAsyncLifetime
     {
         var postgreSqlBuilder = new PostgreSqlBuilder();
         _container = postgreSqlBuilder
-            .WithDatabase("testdb")
-            .WithUsername("postgres")
-            .WithPassword("password")
             .WithImage("postgres:15")
             .WithCleanUp(true)
             .Build();
