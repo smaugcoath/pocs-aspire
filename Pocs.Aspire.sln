@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocs.Aspire.Infrastructure.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B32FE43E-BB73-4694-BFF1-D4AC92010DC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocs.Aspire.ApiService.Tests.Functional", "tests\Pocs.Aspire.ApiService.Tests.Functional\Pocs.Aspire.ApiService.Tests.Functional.csproj", "{EC259711-86B1-46FC-A432-B48D42CE2588}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC259711-86B1-46FC-A432-B48D42CE2588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC259711-86B1-46FC-A432-B48D42CE2588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC259711-86B1-46FC-A432-B48D42CE2588}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC259711-86B1-46FC-A432-B48D42CE2588}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		{F6E49A72-9181-4829-BFE2-7CA2CE8219E2} = {02D9B605-8B51-41D2-BD03-A372584F65DB}
 		{AF6DC058-A1D4-48E2-9918-E221B61CF16D} = {C2AE67F7-32E4-44A7-BE8E-CACFDBFBD4CA}
 		{604EEEA3-FD34-428F-9B40-8BC8EBF1FDC0} = {C2AE67F7-32E4-44A7-BE8E-CACFDBFBD4CA}
+		{EC259711-86B1-46FC-A432-B48D42CE2588} = {C2AE67F7-32E4-44A7-BE8E-CACFDBFBD4CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {378F8BD8-4298-40F5-AA5D-2488EAB1DE2F}
