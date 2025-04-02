@@ -26,6 +26,45 @@ The Pocs.Aspire solution demonstrates a clean architecture implementation using 
 
 This is a personal proof-of-concept (POC) project that I'm using to experiment with .NET Aspire and modern architecture patterns. It serves as both a learning platform and a reference implementation for clean architecture principles in a distributed environment. Through this project, I aim to explore best practices, try new technologies, and develop my skills in modern .NET development.
 
+## Getting Started
+
+### Prerequisites
+
+- .NET 8 SDK
+- Docker Desktop or Podman
+
+More information about prerequisites is available in the [.NET Aspire documentation][aspire-setup].
+
+### Running the Application
+
+1. Clone the repository
+1. Navigate to the solution directory
+1. Make sure the docker engine is running
+1. Run: 
+```shell
+dotnet run --project src/Pocs.Aspire.AppHost
+```
+1. Access the .NET Aspire dashboard at the provided URL.
+```ps
+PS C:\repos\pocs-aspire> dotnet run --project src\Pocs.Aspire.AppHost
+Building...
+info: Aspire.Hosting.DistributedApplication[0]
+      Aspire version: 9.1.0+2a8f48ea5811f317a26405eb315aa315cc9e3cea
+info: Aspire.Hosting.DistributedApplication[0]
+      Distributed application starting.
+info: Aspire.Hosting.DistributedApplication[0]
+      Application host directory is: C:\repos\pocs-aspire\src\Pocs.Aspire.AppHost
+info: Aspire.Hosting.DistributedApplication[0]
+      Now listening on: https://localhost:17131
+info: Aspire.Hosting.DistributedApplication[0]
+      Login to the dashboard at https://localhost:17131/login?t=d9664bcb59521f89eb22ef9db8ed2306
+info: Aspire.Hosting.DistributedApplication[0]
+      Distributed application started. Press Ctrl+C to shut down.
+```
+
+The dashboard will show the status of all the services included in the solution and the URLs to access them.
+For instance, click on the REST API service to access swagger to test it.
+
 ## Project Structure
 
 This solution consists of multiple projects following clean architecture principles:
@@ -58,25 +97,6 @@ This solution follows clean architecture principles with clear separation of con
 - **PostgreSQL**: High-performance open-source database
 - **Redis**: In-memory data store for caching
 - **Docker**: Containerization for consistent deployment
-
-## Getting Started
-
-### Prerequisites
-
-- .NET 8 SDK
-- Docker Desktop or Podman
-
-More information about prerequisites is available in the [.NET Aspire documentation][aspire-setup].
-
-### Running the Application
-
-1. Clone the repository
-2. Navigate to the solution directory
-3. Run: 
-```shell 
-dotnet run --project src/Pocs.Aspire.AppHost
-```
-4. Access the .NET Aspire dashboard at the provided URL
 
 ## Architectural Decisions
 
