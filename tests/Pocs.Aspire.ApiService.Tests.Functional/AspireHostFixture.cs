@@ -1,4 +1,8 @@
 ﻿using Aspire.Hosting;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 namespace Pocs.Aspire.ApiService.Tests.Functional;
 
 public class AspireHostFixture : IAsyncLifetime

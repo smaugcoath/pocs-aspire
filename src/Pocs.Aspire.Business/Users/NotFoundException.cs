@@ -2,7 +2,7 @@
 
 namespace Pocs.Aspire.Business.Users
 {
-    public class NotFoundException: Exception
+    public class NotFoundException : Exception
     {
     }
 }

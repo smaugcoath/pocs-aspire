@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http;
-using Pocs.Aspire.ApiService.Users;
-using Pocs.Aspire.ApiService.Validations;
 using Pocs.Aspire.Business.Users;
+using Pocs.Aspire.Business.Users.Create;
 using Shouldly;
+using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
 
@@ -22,11 +24,11 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         // Arrange
         var client = _fixture.HttpClient;
         var cancellationToken = TestContext.Current.CancellationToken;
-        var newUser = new CreateUserRequest("Test", "User", "test.user@example.com");
+        var newUser = new CreateRequest("Test", "User", "test.user@example.com");
 
         // Act
         var response = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
-        var actual = await response.Content.ReadFromJsonAsync<CreateUserResponse>(cancellationToken);
+        var actual = await response.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -44,7 +46,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var client = _fixture.HttpClient;
         var cancellationToken = TestContext.Current.CancellationToken;
 
-        var invalidUser = new CreateUserRequest("", "", "invalid-email");
+        var invalidUser = new CreateRequest("", "", "invalid-email");
         var expected = TypedResults.Problem(
                detail: "See the 'errors' property for details.",
                instance: "POST /api/users",

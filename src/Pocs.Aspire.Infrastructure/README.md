@@ -46,3 +46,26 @@ The Infrastructure layer uses:
 - Infrastructure concerns are isolated from domain logic
 - Repository implementations follow consistent patterns
 - Database-specific code is contained within this layer
+
+
+## How to create and apply migrations
+
+Open the command line tool and navigate to root folder. Execute the commands from there.
+
+### Createa a new migration
+
+
+```shell
+dotnet ef migrations add <NameOfYourMigration> --project ./src/Pocs.Aspire.Infrastructure --startup-project ./src/Pocs.Aspire.AppHost --output-dir Persistence/Migrations
+```
+
+### Remove migrations
+
+Note: To remove migrations EF requires a running database to check which migrations have been applied. While working locally this can be forced with the "--force" flag.
+```shell
+dotnet ef migrations remove --project ./src/Pocs.Aspire.Infrastructure --startup-project ./src/Pocs.Aspire.AppHost --force
+```
+
+### Update database
+
+At this moment the database is automatically updated by the Aspire Host project.

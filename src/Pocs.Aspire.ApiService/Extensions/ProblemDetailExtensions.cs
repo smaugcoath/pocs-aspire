@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Pocs.Aspire.ApiService.Validations;
-using Pocs.Aspire.Business;
 using Pocs.Aspire.Business.Users;
 using System;
 using System.Collections.Generic;

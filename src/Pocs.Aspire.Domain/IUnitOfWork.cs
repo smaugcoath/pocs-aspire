@@ -1,4 +1,7 @@
-﻿namespace Pocs.Aspire.Domain;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Pocs.Aspire.Domain;
 
 public interface IUnitOfWork
 {
