@@ -26,7 +26,7 @@ namespace Pocs.Aspire.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
+                name: "IX_User_Email",
                 table: "Users",
                 column: "Email",
                 unique: true);

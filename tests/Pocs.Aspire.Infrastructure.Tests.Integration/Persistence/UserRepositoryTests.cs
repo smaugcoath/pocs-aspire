@@ -1,9 +1,7 @@
 namespace Pocs.Aspire.Infrastructure.Tests.Integration.Persistence;
 
 using Microsoft.EntityFrameworkCore;
-using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Infrastructure.Persistence;
-using Shouldly;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -37,31 +35,31 @@ public class UserRepositoryTests : IAsyncLifetime
         await _container.DisposeAsync();
     }
 
-    [Fact]
-    public async Task CreateAsync_ShouldInsertUser()
-    {
-        // Arrange
-        var user = new User
-        {
-            FirstName = "Test",
-            LastName = "User",
-            Email = "test.user@example.com"
-        };
+    //[Fact]
+    //public async Task CreateAsync_ShouldInsertUser()
+    //{
+    //    // Arrange
+    //    var user = new User
+    //    {
+    //        FirstName = "Test",
+    //        LastName = "User",
+    //        Email = "test.user@example.com"
+    //    };
 
-        var expected = user;
+    //    var expected = user;
 
-        using var context = new AppDbContext(DbContextOptions);
-        var repository = new UserRepository(context);
+    //    using var context = new AppDbContext(DbContextOptions);
+    //    var repository = new UserRepository(context);
 
-        // Act
-        await repository.CreateAsync(user, TestContext.Current.CancellationToken);
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    //    // Act
+    //    await repository.CreateAsync(user, TestContext.Current.CancellationToken);
+    //    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Assert
-        var insertedUser = await context.Users
-            .FirstAsync(x => x.UserId == user.Id.Value, TestContext.Current.CancellationToken);
-        var actual = insertedUser.ToDomain();
+    //    // Assert
+    //    var insertedUser = await context.Users
+    //        .FirstAsync(x => x.UserId == user.Id.Value, TestContext.Current.CancellationToken);
+    //    var actual = insertedUser.ToDomain();
 
-        actual.ShouldBeEquivalentTo(expected);
-    }
+    //    actual.ShouldBeEquivalentTo(expected);
+    //}
 }

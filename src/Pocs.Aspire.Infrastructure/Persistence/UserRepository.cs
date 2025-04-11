@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LanguageExt;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
 
@@ -14,44 +14,26 @@ internal class UserRepository : IUserRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<User?> GetByIdAsync(UserId id, CancellationToken cancellationToken)
+    public async Task<Option<User>> GetByIdAsync(UserId id, CancellationToken cancellationToken)
     {
-        var query = await _context.Users
-            .FirstOrDefaultAsync(u => u.UserId == id.Value);
+        var result = await _context.Users.FindAsync(id);
 
-        var result = query?.ToDomain();
         return result;
     }
 
-    public async Task CreateAsync(User user, CancellationToken cancellationToken)
+    public async Task<Unit> CreateAsync(User entity, CancellationToken cancellationToken)
     {
-        var entity = user.ToEntity();
         await _context.Users.AddAsync(entity);
+
+        return Unit.Default;
     }
 
-    public async Task UpdateAsync(User user, CancellationToken cancellationToken)
+    public async Task<Unit> UpdateAsync(User user, CancellationToken cancellationToken)
     {
-        var entity = await _context.Users
-            .FirstOrDefaultAsync(e => e.UserId == user.Id.Value);
-
-        if (entity is null)
-        {
-            throw new InvalidOperationException("User not found.");
-        }
-
-        entity.FirstName = user.FirstName;
-        entity.LastName = user.LastName;
-        entity.Email = user.Email;
+        _context.Users.Update(user);
 
         await Task.CompletedTask;
-    }
 
-    public async Task<bool> UserExistsAsync(UserId id, CancellationToken cancellationToken)
-    {
-        var exists = await _context.Users
-            .AsNoTracking()
-            .AnyAsync(x => x.UserId == id.Value);
-
-        return exists;
+        return Unit.Default;
     }
 }

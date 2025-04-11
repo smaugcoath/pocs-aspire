@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Pocs.Aspire.ApiService.Extensions;
-using Pocs.Aspire.ApiService.Mappers;
-using Pocs.Aspire.Business.Users;
+using Pocs.Aspire.Business.Users.Create;
+using Pocs.Aspire.Business.Users.GetById;
+using Pocs.Aspire.Business.Users.Update;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +15,15 @@ namespace Pocs.Aspire.ApiService.Users;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly ICreateService _createService;
+    private readonly IUpdateService _updateService;
+    private readonly IGetByIdService _getByIdService;
 
-    public UserController(IUserService userService)
+    public UserController(ICreateService userService, IUpdateService updateService, IGetByIdService getByIdService)
     {
-        _userService = userService;
+        _createService = userService;
+        _updateService = updateService;
+        _getByIdService = getByIdService;
     }
 
     /// <summary>
@@ -26,36 +31,39 @@ public class UserController : ControllerBase
     /// </summary>
     /// 
     [HttpPost]
-    [ProducesResponseType<CreateUserResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<CreateResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IResult> Create(
-        [FromBody] CreateUserRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IResult> Create([FromBody] CreateRequest request, CancellationToken cancellationToken)
     {
-        var user = request.ToDomain();
-        var result = await _userService.CreateAsync(user, cancellationToken);
+        var result = await _createService.CreateAsync(request, cancellationToken);
 
-        return result.Match(
-              success => Results.CreatedAtRoute(nameof(Get), new { id = success.Id }, success.ToCreateUserResponse()),
-              error => error.ToProblem(HttpContext));
-              
+        return result.Case switch
+        {
+            CreateResponse response => Results.CreatedAtRoute(nameof(Get), new { id = response.Id }, response),
+            Exception error => error.ToProblem(HttpContext),
+            _ => throw new NotImplementedException()
+        };
+
     }
 
     /// <summary>
     /// Updates an existing user.
     /// </summary>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType<UpdateUserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<UpdateResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IResult> Update([FromRoute] Guid id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> Update([FromRoute] Guid id, [FromBody] UpdateRequest request, CancellationToken cancellationToken)
     {
-        var updated = request.ToDomain(id);
-        var result = await _userService.UpdateAsync(updated, cancellationToken);
+        request = request with { Id = id };
 
-        return result.Match(
-            success => Results.Ok(success.ToUpdateUserResponse()),
-            error => error.ToProblem(HttpContext));
+        var result = await _updateService.UpdateAsync(request, cancellationToken);
+
+        return await result.Match
+            (
+                response => Results.Ok(response),
+                error => error.ToProblem(HttpContext)
+            );
     }
 
     /// <summary>
@@ -63,14 +71,18 @@ public class UserController : ControllerBase
     /// </summary>
     [OutputCache(Duration = 5, VaryByQueryKeys = ["id"])]
     [HttpGet("{id:guid}", Name = nameof(Get))]
-    [ProducesResponseType<UpdateUserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<UpdateResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var result = await _userService.GetAsync(id, cancellationToken);
+        GetByIdRequest request = new(id);
+        var result = await _getByIdService.GetByIdAsync(request, cancellationToken);
 
-        return result.Match(
-            success => Results.Ok(success.ToGetUserResponse()),
-            error => error.ToProblem(HttpContext));
+        return result.Case switch
+        {
+            GetByIdResponse response => Results.Ok(response),
+            Exception error => error.ToProblem(HttpContext),
+            _ => throw new NotImplementedException()
+        };
     }
 }

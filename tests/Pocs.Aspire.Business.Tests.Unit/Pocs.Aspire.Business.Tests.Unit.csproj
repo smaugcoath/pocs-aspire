@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <RootNamespace>Pocs.Aspire.Tests.Business.Tests.Unit</RootNamespace>
@@ -42,6 +41,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pocs.Aspire.Business\Pocs.Aspire.Business.csproj" />
     <ProjectReference Include="..\..\src\Pocs.Aspire.Domain\Pocs.Aspire.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Users\" />
   </ItemGroup>
 
 </Project>

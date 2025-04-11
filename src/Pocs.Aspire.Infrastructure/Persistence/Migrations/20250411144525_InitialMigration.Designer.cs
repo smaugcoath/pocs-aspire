@@ -12,7 +12,7 @@ using Pocs.Aspire.Infrastructure.Persistence;
 namespace Pocs.Aspire.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250328120155_InitialMigration")]
+    [Migration("20250411144525_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -28,29 +28,32 @@ namespace Pocs.Aspire.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Pocs.Aspire.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("Email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("FirstName");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("LastName");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("IX_Users_Email");
+                        .HasDatabaseName("IX_User_Email");
 
                     b.ToTable("Users", (string)null);
                 });

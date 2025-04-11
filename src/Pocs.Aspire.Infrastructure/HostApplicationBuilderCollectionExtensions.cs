@@ -14,7 +14,7 @@ public static class HostApplicationBuilderCollectionExtensions
         builder.AddNpgsqlDbContext<AppDbContext>("postgresdb");
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<AppDbContext>());
-       
+
         return builder;
     }
 
