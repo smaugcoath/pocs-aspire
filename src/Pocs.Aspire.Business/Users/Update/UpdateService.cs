@@ -24,7 +24,7 @@ internal class UpdateService : IUpdateService
 
     public async Task<EitherAsync<Exception, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default)
     {
-        var validationResult = _validator.Validate(request);
+        var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
             return validationResult.ToValidationException();

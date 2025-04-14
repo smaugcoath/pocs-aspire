@@ -1,4 +1,6 @@
 ﻿using LanguageExt;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.Replication;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
 
@@ -35,5 +37,12 @@ internal class UserRepository : IUserRepository
         await Task.CompletedTask;
 
         return Unit.Default;
+    }
+
+    public async Task<bool> EmailExists(Email email, CancellationToken cancellationToken = default)
+    {
+        var result = await _context.Users.AsNoTracking().AnyAsync(x => x.Email == email);
+
+        return result;
     }
 }
