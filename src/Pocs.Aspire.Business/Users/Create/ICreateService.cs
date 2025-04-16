@@ -1,13 +1,14 @@
 ﻿namespace Pocs.Aspire.Business.Users.Create;
 
 using LanguageExt;
+using Pocs.Aspire.Domain.Errors;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 public interface ICreateService
 {
-    Task<Either<Exception, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default);
+    Task<Either<Error, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
