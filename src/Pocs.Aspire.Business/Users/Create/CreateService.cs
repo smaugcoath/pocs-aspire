@@ -2,6 +2,7 @@
 using LanguageExt;
 using Pocs.Aspire.Business.Validations;
 using Pocs.Aspire.Domain;
+using Pocs.Aspire.Domain.Errors;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
 using System;
@@ -25,12 +26,12 @@ namespace Pocs.Aspire.Business.Users.Create
             _validator = validator;
         }
 
-        public async Task<Either<Exception, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default)
+        public async Task<Either<Error, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default)
         {
             var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
             {
-                return validationResult.ToValidationException();
+                return new ValidationError(validationResult.ToFieldErrors());
             }
 
             User user = User.From(UserId.New(), FirstName.From(request.FirstName), LastName.From(request.LastName), Email.From(request.Email));

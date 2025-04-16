@@ -2,7 +2,9 @@
 using LanguageExt;
 using Pocs.Aspire.Business.Validations;
 using Pocs.Aspire.Domain;
+using Pocs.Aspire.Domain.Errors;
 using Pocs.Aspire.Domain.Users;
+using Pocs.Aspire.Domain.Users.ValueObjects;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,20 +24,27 @@ internal class UpdateService : IUpdateService
         _validator = validator;
     }
 
-    public async Task<EitherAsync<Exception, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default)
+    public async Task<Either<Error, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            return validationResult.ToValidationException();
+            return new ValidationError(validationResult.ToFieldErrors());
+        }
+
+        var email = Email.From(request.Email);
+        var isEmailExists = await _userRepository.EmailExists(email, cancellationToken);
+        if (isEmailExists)
+        {
+            return new EmailAlreadyExistsError(email);
         }
 
         var updatedUser = request.ToDomain();
 
         var userOption = await _userRepository.GetByIdAsync(updatedUser.Id, cancellationToken);
 
-        return userOption
-            .ToEither<Exception>(new NotFoundException())
+        return await userOption
+            .ToEither<Error>(new NotFoundError(nameof(User)))
             .ToAsync()
             .BindAsync<UpdateResponse>
             (
@@ -47,6 +56,6 @@ internal class UpdateService : IUpdateService
 
                     return user.ToResponse();
                 }
-            );
+            ).ToEither();
     }
 }

@@ -30,11 +30,6 @@ public static class ValidationExtensions
     {
         return ruleBuilder
             .EmailAddress().WithMessage("A valid email is required.")
-            .MaximumLength(320).WithMessage("Emails cannot exceed 320 characters.")
-            .DependentRules(() =>
-            {
-                ruleBuilder.MustAsync(async (email, cancellationToken) => !(await userRepository.EmailExists(Email.From(email), cancellationToken)))
-                     .WithMessage("This email already exists in the system.");
-            }); ;
+            .MaximumLength(320).WithMessage("Emails cannot exceed 320 characters.");
     }
 }

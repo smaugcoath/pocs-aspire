@@ -1,13 +1,14 @@
 ﻿namespace Pocs.Aspire.Business.Users.GetById;
 
 using LanguageExt;
+using Pocs.Aspire.Domain.Errors;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 public interface IGetByIdService
 {
-    Task<Either<Exception, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default);
+    Task<Either<Error, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default);
 
 }
 
