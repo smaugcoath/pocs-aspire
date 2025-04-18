@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Aspire.Hosting;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Pocs.Aspire.Infrastructure.Persistence;
 
@@ -11,7 +13,7 @@ IDesignTimeDbContextFactory<AppDbContext>
     {
         var builder = DistributedApplication.CreateBuilder(args);
 
-        var postgres = builder
+        builder
             .AddPostgres("postgres")
             .AddDatabase("postgresdb");
 

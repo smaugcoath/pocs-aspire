@@ -1,26 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Sdk Name="Aspire.AppHost.Sdk" Version="9.1.0" />
+
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
 		<IsAspireHost>true</IsAspireHost>
 		<UserSecretsId>4aa91e48-23c8-4be8-b5bc-8bd05670cfa6</UserSecretsId>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<InternalsVisibleTo Include="Pocs.Aspire.ApiService.Tests.Functional" />
 	</ItemGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
-		<PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.1.0" />
-		<PackageReference Include="Aspire.Hosting.Redis" Version="9.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+		<PackageReference Include="Aspire.Hosting.AppHost" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="Aspire.Hosting.Redis" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\Pocs.Aspire.ApiService\Pocs.Aspire.ApiService.csproj" />
 		<ProjectReference Include="..\Pocs.Aspire.Infrastructure\Pocs.Aspire.Infrastructure.csproj" IsAspireProjectResource="false" />

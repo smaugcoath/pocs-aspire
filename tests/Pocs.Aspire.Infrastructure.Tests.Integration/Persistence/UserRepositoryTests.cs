@@ -2,6 +2,8 @@ namespace Pocs.Aspire.Infrastructure.Tests.Integration.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 using Pocs.Aspire.Infrastructure.Persistence;
+
+using System;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -32,6 +34,7 @@ public class UserRepositoryTests : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         await _container.DisposeAsync();
     }
 

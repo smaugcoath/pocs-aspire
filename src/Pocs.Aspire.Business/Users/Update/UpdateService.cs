@@ -23,9 +23,9 @@ internal class UpdateService : IUpdateService
         _validator = validator;
     }
 
-    public async Task<Either<Error, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default)
+    public async Task<Either<Failure, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default)
     {
-        var validationResult = await _validator.ValidateAsync(request);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return new ValidationError(validationResult.ToFieldErrors());
@@ -44,7 +44,7 @@ internal class UpdateService : IUpdateService
         var userOption = await _userRepository.GetByIdAsync(updatedUser.Id, cancellationToken);
 
         return await userOption
-            .ToEither<Error>(new NotFoundError(nameof(User)))
+            .ToEither<Failure>(new NotFoundError(nameof(User)))
             .ToAsync()
             .BindAsync<UpdateResponse>
             (

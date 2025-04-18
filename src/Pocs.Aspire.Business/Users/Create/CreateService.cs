@@ -25,9 +25,9 @@ namespace Pocs.Aspire.Business.Users.Create
             _validator = validator;
         }
 
-        public async Task<Either<Error, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default)
+        public async Task<Either<Failure, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default)
         {
-            var validationResult = await _validator.ValidateAsync(request);
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 return new ValidationError(validationResult.ToFieldErrors());

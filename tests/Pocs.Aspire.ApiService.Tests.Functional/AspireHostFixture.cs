@@ -31,6 +31,7 @@ public class AspireHostFixture : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         await App.StopAsync();
         await App.DisposeAsync();
     }

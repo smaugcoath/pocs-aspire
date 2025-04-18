@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+env:
+  DOTNET_Version: "8.x"
+  SOLUTION_FILE: "Pocs.Aspire.sln"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ProjectSetup
+
+    steps:
+      - uses: actions/chechkout@v4
+
+      - name: Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no restore
+
+      - name: Test
+        run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-restore no-buld
+
+      - name : Publish
+        run: dotnet publish ${{ env.SOLUTION_FILE }}  --configuration Release --no-restore no-buld

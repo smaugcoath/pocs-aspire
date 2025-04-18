@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public interface ICreateService
 {
-    Task<Either<Error, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default);
+    Task<Either<Failure, CreateResponse>> CreateAsync(CreateRequest request, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
