@@ -8,6 +8,7 @@ using Pocs.Aspire.Business.Users.GetById;
 using Pocs.Aspire.Business.Users.Update;
 using Pocs.Aspire.Domain.Errors;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// 
     [HttpPost]
-    public async Task<Results<CreatedAtRoute<CreateResponse>, ValidationProblem>> Create([FromBody] CreateRequest request, CancellationToken cancellationToken)
+    public async Task<Results<CreatedAtRoute<CreateResponse>, ValidationProblem, ProblemHttpResult>> Create([FromBody] CreateRequest request, CancellationToken cancellationToken)
     {
         var result = await _createService.CreateAsync(request, cancellationToken);
 
@@ -41,6 +42,7 @@ public class UserController : ControllerBase
         {
             CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id }),
             ValidationError error => error.ToValidationProblem(HttpContext),
+            EmailAlreadyExistsError error => TypedResults.Problem(title: error.Message, detail: error.Code, statusCode: StatusCodes.Status409Conflict)
             _ => throw new NotImplementedException()
         };
 

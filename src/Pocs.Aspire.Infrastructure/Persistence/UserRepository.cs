@@ -39,9 +39,9 @@ internal class UserRepository : IUserRepository
         return Unit.Default;
     }
 
-    public async Task<bool> EmailExists(Email email, CancellationToken cancellationToken = default)
+    public async Task<bool> EmailExistsExceptForUser(Email email, UserId? userId = null, CancellationToken cancellationToken = default)
     {
-        var result = await _context.Users.AsNoTracking().AnyAsync(x => x.Email == email);
+        var result = await _context.Users.AsNoTracking().AnyAsync(x => x.Email == email && x.Id != userId);
 
         return result;
     }

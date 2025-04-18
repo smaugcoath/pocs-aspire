@@ -33,7 +33,8 @@ internal class UpdateService : IUpdateService
         }
 
         var email = Email.From(request.Email);
-        var isEmailExists = await _userRepository.EmailExists(email, cancellationToken);
+        var userId = UserId.From(request.Id);
+        var isEmailExists = await _userRepository.EmailExistsExceptForUser(email, userId, cancellationToken);
         if (isEmailExists)
         {
             return new EmailAlreadyExistsError(email);

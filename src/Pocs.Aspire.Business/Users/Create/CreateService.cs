@@ -34,6 +34,13 @@ namespace Pocs.Aspire.Business.Users.Create
                 return new ValidationError(validationResult.ToFieldErrors());
             }
 
+            var email = Email.From(request.Email);
+            var isEmailExists = await _userRepository.EmailExistsExceptForUser(email, null, cancellationToken);
+            if (isEmailExists)
+            {
+                return new EmailAlreadyExistsError(email);
+            }
+
             User user = User.From(UserId.New(), FirstName.From(request.FirstName), LastName.From(request.LastName), Email.From(request.Email));
 
             await _userRepository.CreateAsync(user, cancellationToken);
