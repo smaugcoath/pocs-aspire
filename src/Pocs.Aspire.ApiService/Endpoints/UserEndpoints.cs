@@ -15,7 +15,8 @@ using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Users;
 
-public static class UsersEndpoints {
+public static class UsersEndpoints
+{
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("api/users");
@@ -32,9 +33,9 @@ public static class UsersEndpoints {
 
     }
     public static async Task<Results<CreatedAtRoute<CreateResponse>, ValidationProblem, ProblemHttpResult>> Create(
-        CreateRequest request, 
-        ICreateService createService, 
-        HttpContext httpContext, 
+        CreateRequest request,
+        ICreateService createService,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var result = await createService.CreateAsync(request, cancellationToken);
@@ -50,8 +51,8 @@ public static class UsersEndpoints {
     }
 
     public static async Task<Results<Ok<UpdateResponse>, ValidationProblem, ProblemHttpResult>> Update(
-        [FromRoute] Guid id, 
-        [FromBody] UpdateRequest request, 
+        [FromRoute] Guid id,
+        [FromBody] UpdateRequest request,
         IUpdateService updateService,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -75,7 +76,7 @@ public static class UsersEndpoints {
     [OutputCache(Duration = 5, VaryByQueryKeys = ["id"])]
     [HttpGet("{id:guid}", Name = nameof(GetById))]
     public static async Task<Results<Ok<GetByIdResponse>, ProblemHttpResult>> GetById(
-        [FromRoute] Guid id, 
+        [FromRoute] Guid id,
         IGetByIdService getByIdService,
         CancellationToken cancellationToken)
     {

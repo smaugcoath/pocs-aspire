@@ -5,7 +5,6 @@ using Pocs.Aspire.Domain;
 using Pocs.Aspire.Domain.Errors;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 

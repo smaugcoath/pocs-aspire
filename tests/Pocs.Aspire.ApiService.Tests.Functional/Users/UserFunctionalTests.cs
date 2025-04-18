@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using Pocs.Aspire.Business.Users;
 using Pocs.Aspire.Business.Users.Create;
 using Shouldly;
 using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 

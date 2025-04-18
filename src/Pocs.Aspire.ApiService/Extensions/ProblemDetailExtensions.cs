@@ -20,7 +20,7 @@ public static class ProblemDetailsExtensions
     {
         ArgumentNullException.ThrowIfNull(error);
         ArgumentNullException.ThrowIfNull(httpContext);
-        
+
 
         var errors = error.Errors
             .GroupBy(e => e.Field)
