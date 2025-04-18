@@ -3,7 +3,6 @@
 namespace Pocs.Aspire.Business.Validations;
 using FluentValidation;
 using Pocs.Aspire.Domain.Users;
-using Pocs.Aspire.Domain.Users.ValueObjects;
 using System;
 
 public static class ValidationExtensions

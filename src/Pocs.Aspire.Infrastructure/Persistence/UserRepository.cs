@@ -1,6 +1,5 @@
 ﻿using LanguageExt;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.Replication;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
 
