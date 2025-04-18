@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Pocs.Aspire.Business;
 using Pocs.Aspire.Infrastructure;
 using System.Collections.Generic;
+using Pocs.Aspire.ApiService.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,7 +67,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.MapDefaultEndpoints();
-app.MapControllers();
+app.MapUserEndpoints();
 app.EnsureDatabaseCreation();
 
 app.Run();
