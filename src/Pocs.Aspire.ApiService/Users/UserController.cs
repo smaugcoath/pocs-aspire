@@ -42,7 +42,7 @@ public class UserController : ControllerBase
         {
             CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id }),
             ValidationError error => error.ToValidationProblem(HttpContext),
-            EmailAlreadyExistsError error => TypedResults.Problem(title: error.Message, detail: error.Code, statusCode: StatusCodes.Status409Conflict)
+            EmailAlreadyExistsError error => TypedResults.Problem(title: error.Message, detail: error.Code, statusCode: StatusCodes.Status409Conflict),
             _ => throw new NotImplementedException()
         };
 
