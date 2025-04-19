@@ -21,10 +21,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ProjectSetup
-
     steps:
       - uses: actions/checkout@v4
         with:
