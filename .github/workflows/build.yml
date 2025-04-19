@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - "main"
+      - feature/* 
+  pull_request:
+    branches: 
+      - feature/* 
 
 env:
   DOTNET_Version: "8.x"
