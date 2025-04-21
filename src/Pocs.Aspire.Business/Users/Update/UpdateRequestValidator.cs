@@ -11,7 +11,7 @@ public class UpdateRequestValidator : AbstractValidator<UpdateRequest>
     /// </summary>
     public UpdateRequestValidator(IUserRepository userRepository)
     {
-        ArgumentNullException.ThrowIfNull(userRepository, nameof(userRepository));
+        ArgumentNullException.ThrowIfNull(userRepository);
 
         RuleFor(x => x.Id).ValidUserId();
         RuleFor(u => u.FirstName).ValidFirstName();

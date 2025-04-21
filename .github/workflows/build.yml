@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - feature/* 
+  pull_request:
+    branches: 
+      - feature/*
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: "8.x"
+  SOLUTION_FILE: "Pocs.Aspire.sln"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+           token: ${{ github.token }}
+
+      - name: Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-restore --no-build
+
+      - name : Publish
+        run: dotnet publish ${{ env.SOLUTION_FILE }}  --configuration Release --no-restore --no-build

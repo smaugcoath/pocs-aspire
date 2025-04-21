@@ -8,7 +8,7 @@ namespace Pocs.Aspire.Business.Users.Update;
 
 public interface IUpdateService
 {
-    Task<Either<Error, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default);
+    Task<Either<Failure, UpdateResponse>> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

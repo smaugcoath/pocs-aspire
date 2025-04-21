@@ -22,9 +22,9 @@ internal class GetByIdService : IGetByIdService
         _validator = validator;
     }
 
-    public async Task<Either<Error, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default)
+    public async Task<Either<Failure, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default)
     {
-        var validationResult = _validator.Validate(request);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return new ValidationError(validationResult.ToFieldErrors());
@@ -35,7 +35,7 @@ internal class GetByIdService : IGetByIdService
         var userOption = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
         return userOption
-            .ToEither<Error>(new NotFoundError(nameof(User)))
+            .ToEither<Failure>(new NotFoundError(nameof(User)))
             .Bind<GetByIdResponse>(x => x.ToResponse());
     }
 

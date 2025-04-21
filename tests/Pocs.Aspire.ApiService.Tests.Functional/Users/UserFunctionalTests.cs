@@ -66,7 +66,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
     //    // Assert
     //    response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     //    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-    //    // TODO: Assert problem details. Missing excluding to exclude traceId and other details
+    //    // Assert problem details. Missing excluding to exclude traceId and other details
     //    // errorContent.ShouldBeEquivalentTo(expected);
 
     //}

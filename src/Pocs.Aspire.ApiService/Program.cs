@@ -69,4 +69,4 @@ app.MapDefaultEndpoints();
 app.MapUserEndpoints();
 app.EnsureDatabaseCreation();
 
-app.Run();
+await app.RunAsync();

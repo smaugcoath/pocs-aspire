@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public interface IGetByIdService
 {
-    Task<Either<Error, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default);
+    Task<Either<Failure, GetByIdResponse>> GetByIdAsync(GetByIdRequest request, CancellationToken cancellationToken = default);
 
 }
 
