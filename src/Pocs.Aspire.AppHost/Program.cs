@@ -9,6 +9,7 @@ public static class Program
     {
         var builder = DistributedApplication.CreateBuilder(args);
 
+        
         var cache = builder.AddRedis("cache")
             .WithRedisInsight();
 
@@ -23,10 +24,13 @@ public static class Program
             //.WithDataVolume(isReadOnly: false)
             .AddDatabase("postgresdb");
 
+
         builder.AddProject<Projects.Pocs_Aspire_ApiService>("apiservice")
+            .WithExternalHttpEndpoints()
             .WithReference(postgresDb)
+            .WithReference(cache)
             .WaitFor(postgresDb)
-            .WithReference(cache);
+            .WaitFor(cache);
 
 
         var app = builder.Build();

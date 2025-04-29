@@ -1,12 +1,15 @@
+using System.Collections.Generic;
+
 using Asp.Versioning;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Pocs.Aspire.ApiService.Users;
 using Pocs.Aspire.Business;
 using Pocs.Aspire.Infrastructure;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 

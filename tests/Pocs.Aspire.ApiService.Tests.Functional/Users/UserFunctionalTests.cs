@@ -1,31 +1,38 @@
-using Microsoft.AspNetCore.Http;
-using Pocs.Aspire.Business.Users.Create;
-using Shouldly;
 using System;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Http;
+
+using Pocs.Aspire.Business.Users.Create;
+
+using Shouldly;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
 
 public class UserFunctionalTests : IClassFixture<AspireHostFixture>
 {
     private readonly AspireHostFixture _fixture;
+    private readonly ITestOutputHelper _output;
 
-    public UserFunctionalTests(AspireHostFixture fixture)
+    public UserFunctionalTests(AspireHostFixture fixture, ITestOutputHelper output)
     {
         _fixture = fixture;
+        _output = output;
     }
 
     [Fact]
     public async Task Post_CreateUser_ReturnsCreatedWithCorrectLocation_WhenInputIsValid()
     {
         // Arrange
-        var client = _fixture.HttpClient;
+        _output.WriteLine("Test starting.");
+        //var client = _fixture.HttpClient;
+        _output.WriteLine($"Client config: {_fixture.HttpClient.BaseAddress}");
         var cancellationToken = TestContext.Current.CancellationToken;
         var newUser = new CreateRequest("Test", "User", "test.user@example.com");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
+        var response = await _fixture.HttpClient.PostAsJsonAsync("/api/users", newUser, cancellationToken);
         var actual = await response.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
 
         // Assert
@@ -33,43 +40,10 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         response.Headers.Location.ShouldNotBeNull();
         actual.ShouldNotBeNull();
         actual.Id.ShouldNotBe(Guid.Empty);
-        var expectedUri = new Uri(client.BaseAddress!, $"/api/users/{actual.Id}");
+        var expectedUri = new Uri(_fixture.HttpClient.BaseAddress!, $"/api/users/{actual.Id}");
         response.Headers.Location.ShouldBe(expectedUri);
     }
 
-    //[Fact]
-    //public async Task Post_CreateUser_ReturnsBadRequest_WhenInputIsInvalid()
-    //{
-    //    // Arrange
-    //    var client = _fixture.HttpClient;
-    //    var cancellationToken = TestContext.Current.CancellationToken;
-
-    //    var invalidUser = new CreateRequest("", "", "invalid-email");
-    //    var expected = TypedResults.Problem(
-    //           detail: "See the 'errors' property for details.",
-    //           instance: "POST /api/users",
-    //           statusCode: StatusCodes.Status400BadRequest,
-    //           title: "Validation errors occurred.",
-    //           type: nameof(BusinessValidationException),
-    //           extensions: new Dictionary<string, object?>()
-    //           {
-    //                { "FirstName", "First name is required."},
-    //                { "LastName", "Last name is required."},
-    //                { "Email", "A valid email is required."}
-    //           }
-    //       );
-
-
-    //    // Act
-    //    var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
-
-    //    // Assert
-    //    response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    //    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-    //    // Assert problem details. Missing excluding to exclude traceId and other details
-    //    // errorContent.ShouldBeEquivalentTo(expected);
-
-    //}
 }
 
 

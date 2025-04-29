@@ -1,2 +1,10 @@
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
 --secret-file .secrets
--P ubuntu-latest=nektos/act-environments-ubuntu:22.04
+--env DOCKER_BUILDKIT=1
+--env ACTIONS_RUNTIME_TOKEN=local
+--env ACTIONS_RUN_ID=1
+--container-options=--privileged
+--bind /var/run/docker.sock:/var/run/docker.sock
+--env ASPNETCORE_URLS=http://0.0.0.0
+--container-options="--privileged"
+--container-options="--add-host=host.docker.internal:host-gateway"
