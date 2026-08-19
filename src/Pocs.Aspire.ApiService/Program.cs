@@ -10,10 +10,8 @@ using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
@@ -29,24 +27,14 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add API versioning.
 builder.Services.AddApiVersioning(options =>
 {
-    // Set the default API version.
     options.DefaultApiVersion = new ApiVersion(1, 0);
-    // Assume the default version when not specified.
     options.AssumeDefaultVersionWhenUnspecified = true;
-    // Report API versions in responses.
     options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
-// Add a versioned API explorer for Swagger integration.
-builder.Services.AddApiVersioning().AddApiExplorer(options =>
-{
-    // Format the version in the group name (e.g. "v1").
-    options.GroupNameFormat = "'v'VVV";
-    // Substitute the version in the URL.
-    options.SubstituteApiVersionInUrl = true;
-});
+
 builder.AddRedisOutputCache("cache");
 
 builder.AddInfrastructureServices();
@@ -55,11 +43,8 @@ builder.Services.AddBusinessServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseExceptionHandler();
 app.UseOutputCache();
-// Enable Swagger middleware in development (or as needed).
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

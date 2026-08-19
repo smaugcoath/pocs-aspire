@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using Pocs.Aspire.Business.Users.Create;
+using Pocs.Aspire.Business.Users.GetById;
 using Shouldly;
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
@@ -25,7 +28,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var newUser = new CreateRequest("Test", "User", "test.user@example.com");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
+        var response = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
         var actual = await response.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
 
         // Assert
@@ -33,45 +36,125 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         response.Headers.Location.ShouldNotBeNull();
         actual.ShouldNotBeNull();
         actual.Id.ShouldNotBe(Guid.Empty);
-        var expectedUri = new Uri(client.BaseAddress!, $"/api/users/{actual.Id}");
+        var expectedUri = new Uri(client.BaseAddress!, $"/api/v1/users/{actual.Id}");
         response.Headers.Location.ShouldBe(expectedUri);
     }
 
-    //[Fact]
-    //public async Task Post_CreateUser_ReturnsBadRequest_WhenInputIsInvalid()
-    //{
-    //    // Arrange
-    //    var client = _fixture.HttpClient;
-    //    var cancellationToken = TestContext.Current.CancellationToken;
+    private static readonly JsonSerializerOptions CaseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
 
-    //    var invalidUser = new CreateRequest("", "", "invalid-email");
-    //    var expected = TypedResults.Problem(
-    //           detail: "See the 'errors' property for details.",
-    //           instance: "POST /api/users",
-    //           statusCode: StatusCodes.Status400BadRequest,
-    //           title: "Validation errors occurred.",
-    //           type: nameof(BusinessValidationException),
-    //           extensions: new Dictionary<string, object?>()
-    //           {
-    //                { "FirstName", "First name is required."},
-    //                { "LastName", "Last name is required."},
-    //                { "Email", "A valid email is required."}
-    //           }
-    //       );
+    [Fact]
+    public async Task Post_CreateUser_ReturnsBadRequestWithFieldErrors_WhenInputIsInvalid()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var invalidUser = new CreateRequest("", "", "not-an-email");
 
+        // Act
+        var response = await client.PostAsJsonAsync("/api/v1/users", invalidUser, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
 
-    //    // Act
-    //    var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldNotBeNull();
+        problem.Errors["FirstName"].ShouldBe(["First name is required."]);
+        problem.Errors["LastName"].ShouldBe(["Last name is required."]);
+        problem.Errors["Email"].ShouldBe(["A valid email is required."]);
+    }
 
-    //    // Assert
-    //    response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    //    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-    //    // Assert problem details. Missing excluding to exclude traceId and other details
-    //    // errorContent.ShouldBeEquivalentTo(expected);
+    [Fact]
+    public async Task Post_CreateUser_ReturnsBadRequest_WhenEmailExceedsMaxLength()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var overlongLocalPart = new string('a', 92);
+        var overlongEmail = $"{overlongLocalPart}@example.com"; // 92 + 12 = 104 chars, valid format, over the 100-char DB column limit
+        var invalidUser = new CreateRequest("Ada", "Lovelace", overlongEmail);
 
-    //}
+        // Act
+        var response = await client.PostAsJsonAsync("/api/v1/users", invalidUser, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldNotBeNull();
+        problem.Errors["Email"].ShouldBe(["Emails cannot exceed 100 characters."]);
+    }
+
+#pragma warning disable CA1812 // instantiated via JSON deserialization
+    private sealed record ValidationErrorsPayload(string? Title, Dictionary<string, string[]>? Errors);
+#pragma warning restore CA1812
+
+    [Fact]
+    public async Task Get_GetById_ReturnsOkWithUser_WhenUserExists()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var newUser = new CreateRequest("Grace", "Hopper", "grace.hopper.getbyid@example.com");
+
+        var createResponse = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
+        var created = await createResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        created.ShouldNotBeNull();
+
+        var expected = new GetByIdResponse(created.Id, "Grace", "Hopper", "grace.hopper.getbyid@example.com");
+
+        // Act
+        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{created.Id}"), cancellationToken);
+        var actual = await response.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        actual.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var missingId = Guid.Parse("00000000-0000-0000-0000-0000000000aa");
+
+        // Act
+        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{missingId}"), cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsEachUsersOwnData_WhenRequestedBackToBackWithinTheCacheWindow()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var userA = new CreateRequest("Alice", "Anderson", "alice.anderson.cache@example.com");
+        var userB = new CreateRequest("Bob", "Baker", "bob.baker.cache@example.com");
+
+        var createdAResponse = await client.PostAsJsonAsync("/api/v1/users", userA, cancellationToken);
+        var createdA = await createdAResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        createdA.ShouldNotBeNull();
+
+        var createdBResponse = await client.PostAsJsonAsync("/api/v1/users", userB, cancellationToken);
+        var createdB = await createdBResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        createdB.ShouldNotBeNull();
+
+        var expectedA = new GetByIdResponse(createdA.Id, "Alice", "Anderson", "alice.anderson.cache@example.com");
+        var expectedB = new GetByIdResponse(createdB.Id, "Bob", "Baker", "bob.baker.cache@example.com");
+
+        // Act
+        var responseA = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdA.Id}"), cancellationToken);
+        var actualA = await responseA.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        var responseB = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdB.Id}"), cancellationToken);
+        var actualB = await responseB.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        // Assert
+        actualA.ShouldBeEquivalentTo(expectedA);
+        actualB.ShouldBeEquivalentTo(expectedB);
+    }
 }
-
-
-
-

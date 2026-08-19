@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Asp.Versioning;
+using Asp.Versioning.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Pocs.Aspire.ApiService.Extensions;
 using Pocs.Aspire.Business.Users.Create;
 using Pocs.Aspire.Business.Users.GetById;
@@ -19,7 +22,13 @@ public static class UsersEndpoints
 {
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("api/users");
+        var apiVersionSet = builder.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1, 0))
+            .ReportApiVersions()
+            .Build();
+
+        var group = builder.MapGroup("api/v{version:apiVersion}/users")
+            .WithApiVersionSet(apiVersionSet);
 
         group.MapPost("", Create)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -27,7 +36,8 @@ public static class UsersEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
         group.MapGet("{id:guid}", GetById)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .WithName(nameof(GetById));
+            .WithName(nameof(GetById))
+            .CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(5)).SetVaryByRouteValue("id"));
 
         return builder;
 
@@ -42,7 +52,7 @@ public static class UsersEndpoints
 
         return result.Case switch
         {
-            CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id }),
+            CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id, version = "1" }),
             ValidationError error => error.ToValidationProblem(httpContext),
             EmailAlreadyExistsError error => TypedResults.Problem(title: error.Message, detail: error.Code, statusCode: StatusCodes.Status409Conflict),
             _ => throw new NotImplementedException()
@@ -73,8 +83,6 @@ public static class UsersEndpoints
     /// <summary>
     /// Retrieves a user by ID.
     /// </summary>
-    [OutputCache(Duration = 5, VaryByQueryKeys = ["id"])]
-    [HttpGet("{id:guid}", Name = nameof(GetById))]
     public static async Task<Results<Ok<GetByIdResponse>, ProblemHttpResult>> GetById(
         [FromRoute] Guid id,
         IGetByIdService getByIdService,

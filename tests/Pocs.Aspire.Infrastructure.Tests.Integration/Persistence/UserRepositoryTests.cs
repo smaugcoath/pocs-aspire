@@ -1,9 +1,14 @@
 namespace Pocs.Aspire.Infrastructure.Tests.Integration.Persistence;
 
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
+using Pocs.Aspire.Domain.Users;
+using Pocs.Aspire.Domain.Users.ValueObjects;
 using Pocs.Aspire.Infrastructure.Persistence;
+using Shouldly;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -38,31 +43,65 @@ public class UserRepositoryTests : IAsyncLifetime
         await _container.DisposeAsync();
     }
 
-    //[Fact]
-    //public async Task CreateAsync_ShouldInsertUser()
-    //{
-    //    // Arrange
-    //    var user = new User
-    //    {
-    //        FirstName = "Test",
-    //        LastName = "User",
-    //        Email = "test.user@example.com"
-    //    };
+    [Fact]
+    public async Task GetByIdAsync_ReturnsUser_WhenUserExists()
+    {
+        // Arrange
+        var expected = User.From(
+            UserId.New(),
+            FirstName.From("Ada"),
+            LastName.From("Lovelace"),
+            Email.From("ada.lovelace.getbyid@example.com"));
 
-    //    var expected = user;
+        await using (var seedContext = new AppDbContext(DbContextOptions))
+        {
+            seedContext.Add(expected);
+            await seedContext.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
 
-    //    using var context = new AppDbContext(DbContextOptions);
-    //    var repository = new UserRepository(context);
+        await using var context = new AppDbContext(DbContextOptions);
+        var repository = new UserRepository(context);
 
-    //    // Act
-    //    await repository.CreateAsync(user, TestContext.Current.CancellationToken);
-    //    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        // Act
+        var result = await repository.GetByIdAsync(expected.Id, TestContext.Current.CancellationToken);
 
-    //    // Assert
-    //    var insertedUser = await context.Users
-    //        .FirstAsync(x => x.UserId == user.Id.Value, TestContext.Current.CancellationToken);
-    //    var actual = insertedUser.ToDomain();
+        // Assert
+        var actual = result.Match(
+            Some: user => user,
+            None: () => throw new InvalidOperationException("Expected the user to be found, but the repository returned None."));
 
-    //    actual.ShouldBeEquivalentTo(expected);
-    //}
+        actual.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ThrowsOperationCanceled_WhenCancellationTokenIsAlreadyCanceled()
+    {
+        // Arrange
+        await using var context = new AppDbContext(DbContextOptions);
+        var repository = new UserRepository(context);
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        // Act
+        var act = () => repository.GetByIdAsync(UserId.New(), cts.Token);
+
+        // Assert
+        await Should.ThrowAsync<OperationCanceledException>(act);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsNone_WhenUserDoesNotExist()
+    {
+        // Arrange
+        await using var context = new AppDbContext(DbContextOptions);
+        var repository = new UserRepository(context);
+        var missingId = UserId.New();
+        var expected = Option<User>.None;
+
+        // Act
+        var result = await repository.GetByIdAsync(missingId, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeEquivalentTo(expected);
+    }
 }

@@ -22,7 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Pocs.Aspire.ApiService\Pocs.Aspire.ApiService.csproj" />
     <ProjectReference Include="..\..\src\Pocs.Aspire.AppHost\Pocs.Aspire.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\Pocs.Aspire.Infrastructure\Pocs.Aspire.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
