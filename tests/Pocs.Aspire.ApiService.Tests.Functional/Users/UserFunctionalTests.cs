@@ -125,4 +125,36 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsEachUsersOwnData_WhenRequestedBackToBackWithinTheCacheWindow()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var userA = new CreateRequest("Alice", "Anderson", "alice.anderson.cache@example.com");
+        var userB = new CreateRequest("Bob", "Baker", "bob.baker.cache@example.com");
+
+        var createdAResponse = await client.PostAsJsonAsync("/api/users", userA, cancellationToken);
+        var createdA = await createdAResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        createdA.ShouldNotBeNull();
+
+        var createdBResponse = await client.PostAsJsonAsync("/api/users", userB, cancellationToken);
+        var createdB = await createdBResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        createdB.ShouldNotBeNull();
+
+        var expectedA = new GetByIdResponse(createdA.Id, "Alice", "Anderson", "alice.anderson.cache@example.com");
+        var expectedB = new GetByIdResponse(createdB.Id, "Bob", "Baker", "bob.baker.cache@example.com");
+
+        // Act: request A, then immediately request B (within the 5s output-cache window).
+        var responseA = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{createdA.Id}"), cancellationToken);
+        var actualA = await responseA.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        var responseB = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{createdB.Id}"), cancellationToken);
+        var actualB = await responseB.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        // Assert: each request must return its own user, not a cached response for a different id.
+        actualA.ShouldBeEquivalentTo(expectedA);
+        actualB.ShouldBeEquivalentTo(expectedB);
+    }
 }
