@@ -146,14 +146,14 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var expectedA = new GetByIdResponse(createdA.Id, "Alice", "Anderson", "alice.anderson.cache@example.com");
         var expectedB = new GetByIdResponse(createdB.Id, "Bob", "Baker", "bob.baker.cache@example.com");
 
-        // Act: request A, then immediately request B (within the 5s output-cache window).
+        // Act
         var responseA = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdA.Id}"), cancellationToken);
         var actualA = await responseA.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
 
         var responseB = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdB.Id}"), cancellationToken);
         var actualB = await responseB.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
 
-        // Assert: each request must return its own user, not a cached response for a different id.
+        // Assert
         actualA.ShouldBeEquivalentTo(expectedA);
         actualB.ShouldBeEquivalentTo(expectedB);
     }

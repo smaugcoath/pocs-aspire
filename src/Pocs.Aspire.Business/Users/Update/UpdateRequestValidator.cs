@@ -6,9 +6,6 @@ using System;
 namespace Pocs.Aspire.Business.Users.Update;
 public class UpdateRequestValidator : AbstractValidator<UpdateRequest>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UpdateRequestValidator"/> class.
-    /// </summary>
     public UpdateRequestValidator(IUserRepository userRepository)
     {
         ArgumentNullException.ThrowIfNull(userRepository);

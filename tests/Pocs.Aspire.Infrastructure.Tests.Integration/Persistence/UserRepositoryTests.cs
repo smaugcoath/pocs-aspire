@@ -1,5 +1,6 @@
 namespace Pocs.Aspire.Infrastructure.Tests.Integration.Persistence;
 
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Pocs.Aspire.Domain.Users;
 using Pocs.Aspire.Domain.Users.ValueObjects;
@@ -41,34 +42,6 @@ public class UserRepositoryTests : IAsyncLifetime
         GC.SuppressFinalize(this);
         await _container.DisposeAsync();
     }
-
-    //[Fact]
-    //public async Task CreateAsync_ShouldInsertUser()
-    //{
-    //    // Arrange
-    //    var user = new User
-    //    {
-    //        FirstName = "Test",
-    //        LastName = "User",
-    //        Email = "test.user@example.com"
-    //    };
-
-    //    var expected = user;
-
-    //    using var context = new AppDbContext(DbContextOptions);
-    //    var repository = new UserRepository(context);
-
-    //    // Act
-    //    await repository.CreateAsync(user, TestContext.Current.CancellationToken);
-    //    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-    //    // Assert
-    //    var insertedUser = await context.Users
-    //        .FirstAsync(x => x.UserId == user.Id.Value, TestContext.Current.CancellationToken);
-    //    var actual = insertedUser.ToDomain();
-
-    //    actual.ShouldBeEquivalentTo(expected);
-    //}
 
     [Fact]
     public async Task GetByIdAsync_ReturnsUser_WhenUserExists()
@@ -123,11 +96,12 @@ public class UserRepositoryTests : IAsyncLifetime
         await using var context = new AppDbContext(DbContextOptions);
         var repository = new UserRepository(context);
         var missingId = UserId.New();
+        var expected = Option<User>.None;
 
         // Act
         var result = await repository.GetByIdAsync(missingId, TestContext.Current.CancellationToken);
 
         // Assert
-        result.IsNone.ShouldBeTrue();
+        result.ShouldBeEquivalentTo(expected);
     }
 }

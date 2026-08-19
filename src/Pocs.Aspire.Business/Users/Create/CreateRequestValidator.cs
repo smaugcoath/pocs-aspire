@@ -6,9 +6,6 @@ using System;
 namespace Pocs.Aspire.Business.Users.Create;
 public class CreateUserRequestValidator : AbstractValidator<CreateRequest>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CreateUserRequestValidator"/> class.
-    /// </summary>
     public CreateUserRequestValidator(IUserRepository userRepository)
     {
         ArgumentNullException.ThrowIfNull(userRepository);

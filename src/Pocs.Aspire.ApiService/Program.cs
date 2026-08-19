@@ -10,10 +10,8 @@ using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
@@ -29,8 +27,6 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add API versioning, applied via NewApiVersionSet()/WithApiVersionSet() on the
-// user endpoints (URL-segment versioning: /api/v1/users/...).
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -47,11 +43,8 @@ builder.Services.AddBusinessServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseExceptionHandler();
 app.UseOutputCache();
-// Enable Swagger middleware in development (or as needed).
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

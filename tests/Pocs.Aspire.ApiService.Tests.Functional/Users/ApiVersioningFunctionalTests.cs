@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
 
 /// <summary>
-/// Proves the users endpoints are actually wired to API versioning (URL-segment
-/// versioned routes under api/v{version}/users), not just configured with no
-/// endpoint applying it.
+/// Proves the users endpoints are wired to URL-segment API versioning
+/// (api/v{version}/users), not just configured with no endpoint applying it.
 /// </summary>
 public class ApiVersioningFunctionalTests : IClassFixture<AspireHostFixture>
 {
@@ -54,16 +53,11 @@ public class ApiVersioningFunctionalTests : IClassFixture<AspireHostFixture>
         var cancellationToken = TestContext.Current.CancellationToken;
         var someId = Guid.Parse("00000000-0000-0000-0000-0000000000bb");
 
-        // Act: v9 is never registered as a supported version.
+        // Act
         var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v9/users/{someId}"), cancellationToken);
 
-        // Assert: this is a characterization, not a red->green case - a request to
-        // an unrecognized path 404s whether or not versioning is wired at all, so
-        // it can't be made red by the wiring change. With URL-segment versioning,
-        // the {version:apiVersion} route constraint only accepts a syntactically
-        // valid version token; an unregistered version simply has no matching
-        // endpoint, the same as any other failed route constraint (e.g. {id:guid}
-        // rejecting a non-guid) - so the policy here is 404, not 400.
+        // Assert: an unregistered version fails the {version:apiVersion} route
+        // constraint, the same as any other failed route constraint - hence 404, not 400.
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

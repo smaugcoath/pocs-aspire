@@ -3,6 +3,7 @@ using Pocs.Aspire.Business.Users.Create;
 using Pocs.Aspire.Infrastructure.Persistence;
 using Shouldly;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Persistence;
@@ -21,13 +22,7 @@ public class DatabaseMigrationFunctionalTests : IClassFixture<AspireHostFixture>
     {
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
-
-        // Force a real round-trip through the running ApiService so its startup
-        // database-initialization code (EnsureDatabaseCreation) has definitely executed
-        // against the real Postgres resource before we inspect the schema directly.
-        var newUser = new CreateRequest("Migration", "Check", "migration.check@example.com");
-        var warmupResponse = await _fixture.HttpClient.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
-        warmupResponse.EnsureSuccessStatusCode();
+        await EnsureApiServiceHasStartedUpAgainstPostgresAsync(cancellationToken);
 
         var connectionString = await _fixture.App.GetConnectionStringAsync("postgresdb", cancellationToken);
         connectionString.ShouldNotBeNull();
@@ -40,5 +35,12 @@ public class DatabaseMigrationFunctionalTests : IClassFixture<AspireHostFixture>
 
         // Assert
         appliedMigrations.ShouldContain("20250411144525_InitialMigration");
+    }
+
+    private async Task EnsureApiServiceHasStartedUpAgainstPostgresAsync(CancellationToken cancellationToken)
+    {
+        var newUser = new CreateRequest("Migration", "Check", "migration.check@example.com");
+        var warmupResponse = await _fixture.HttpClient.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
+        warmupResponse.EnsureSuccessStatusCode();
     }
 }
