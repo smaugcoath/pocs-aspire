@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Pocs.Aspire.Business.Users.Create;
+using Pocs.Aspire.Business.Users.GetById;
+using Pocs.Aspire.Business.Users.Update;
 using Shouldly;
 using System;
 using System.Net.Http.Json;
@@ -16,13 +18,16 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         _fixture = fixture;
     }
 
+    private static CreateRequest NewCreateRequest(string? email = null) =>
+        new("Test", "User", email ?? $"{Guid.NewGuid():N}@example.com");
+
     [Fact]
     public async Task Post_CreateUser_ReturnsCreatedWithCorrectLocation_WhenInputIsValid()
     {
         // Arrange
         var client = _fixture.HttpClient;
         var cancellationToken = TestContext.Current.CancellationToken;
-        var newUser = new CreateRequest("Test", "User", "test.user@example.com");
+        var newUser = NewCreateRequest();
 
         // Act
         var response = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
@@ -37,41 +42,114 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         response.Headers.Location.ShouldBe(expectedUri);
     }
 
-    //[Fact]
-    //public async Task Post_CreateUser_ReturnsBadRequest_WhenInputIsInvalid()
-    //{
-    //    // Arrange
-    //    var client = _fixture.HttpClient;
-    //    var cancellationToken = TestContext.Current.CancellationToken;
+    [Fact]
+    public async Task Post_CreateUser_ReturnsBadRequest_WhenInputIsInvalid()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var invalidUser = new CreateRequest("", "", "invalid-email");
 
-    //    var invalidUser = new CreateRequest("", "", "invalid-email");
-    //    var expected = TypedResults.Problem(
-    //           detail: "See the 'errors' property for details.",
-    //           instance: "POST /api/users",
-    //           statusCode: StatusCodes.Status400BadRequest,
-    //           title: "Validation errors occurred.",
-    //           type: nameof(BusinessValidationException),
-    //           extensions: new Dictionary<string, object?>()
-    //           {
-    //                { "FirstName", "First name is required."},
-    //                { "LastName", "Last name is required."},
-    //                { "Email", "A valid email is required."}
-    //           }
-    //       );
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
 
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>(cancellationToken);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldContainKey("FirstName");
+        problem.Errors.ShouldContainKey("LastName");
+        problem.Errors.ShouldContainKey("Email");
+        problem.Errors["LastName"].ShouldContain("Last name is required.");
+    }
 
-    //    // Act
-    //    var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+    [Fact]
+    public async Task Post_CreateUser_ReturnsConflict_WhenEmailAlreadyExists()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var email = $"{Guid.NewGuid():N}@example.com";
+        await client.PostAsJsonAsync("/api/users", NewCreateRequest(email), cancellationToken);
 
-    //    // Assert
-    //    response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    //    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-    //    // Assert problem details. Missing excluding to exclude traceId and other details
-    //    // errorContent.ShouldBeEquivalentTo(expected);
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users", NewCreateRequest(email), cancellationToken);
 
-    //}
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsOkWithUser_WhenUserExists()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var createResponse = await client.PostAsJsonAsync("/api/users", NewCreateRequest(), cancellationToken);
+        var created = await createResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/api/users/{created!.Id}", UriKind.Relative), cancellationToken);
+        var actual = await response.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        actual.ShouldNotBeNull();
+        actual.Id.ShouldBe(created.Id);
+    }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/api/users/{Guid.NewGuid()}", UriKind.Relative), cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Put_UpdateUser_ReturnsOkWithUpdatedUser_WhenInputIsValid()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var createResponse = await client.PostAsJsonAsync("/api/users", NewCreateRequest(), cancellationToken);
+        var created = await createResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        var updateRequest = new UpdateRequest(created!.Id, "Updated", "Name", $"{Guid.NewGuid():N}@example.com");
+
+        // Act
+        var response = await client.PutAsJsonAsync($"/api/users/{created.Id}", updateRequest, cancellationToken);
+        var actual = await response.Content.ReadFromJsonAsync<UpdateResponse>(cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        actual.ShouldNotBeNull();
+        actual.FirstName.ShouldBe("Updated");
+        actual.LastName.ShouldBe("Name");
+    }
+
+    [Fact]
+    public async Task Put_UpdateUser_ReturnsConflict_WhenEmailAlreadyExistsForAnotherUser()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var existingEmail = $"{Guid.NewGuid():N}@example.com";
+        await client.PostAsJsonAsync("/api/users", NewCreateRequest(existingEmail), cancellationToken);
+
+        var otherCreateResponse = await client.PostAsJsonAsync("/api/users", NewCreateRequest(), cancellationToken);
+        var other = await otherCreateResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
+        var updateRequest = new UpdateRequest(other!.Id, "Updated", "Name", existingEmail);
+
+        // Act
+        var response = await client.PutAsJsonAsync($"/api/users/{other.Id}", updateRequest, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
 }
-
-
-
-

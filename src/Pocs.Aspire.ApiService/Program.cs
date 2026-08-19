@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,24 +28,6 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add API versioning.
-builder.Services.AddApiVersioning(options =>
-{
-    // Set the default API version.
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    // Assume the default version when not specified.
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    // Report API versions in responses.
-    options.ReportApiVersions = true;
-});
-// Add a versioned API explorer for Swagger integration.
-builder.Services.AddApiVersioning().AddApiExplorer(options =>
-{
-    // Format the version in the group name (e.g. "v1").
-    options.GroupNameFormat = "'v'VVV";
-    // Substitute the version in the URL.
-    options.SubstituteApiVersionInUrl = true;
-});
 builder.AddRedisOutputCache("cache");
 
 builder.AddInfrastructureServices();
@@ -67,6 +48,6 @@ if (app.Environment.IsDevelopment())
 }
 app.MapDefaultEndpoints();
 app.MapUserEndpoints();
-app.EnsureDatabaseCreation();
+app.ApplyDatabaseMigrations();
 
 await app.RunAsync();

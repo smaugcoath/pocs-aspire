@@ -1,13 +1,13 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Pocs.Aspire.Business.Validations;
 
 namespace Pocs.Aspire.Business.Users.GetById;
-public class CreateUserRequestValidator : AbstractValidator<GetByIdRequest>
+public class GetByIdRequestValidator : AbstractValidator<GetByIdRequest>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CreateUserRequestValidator"/> class.
+    /// Initializes a new instance of the <see cref="GetByIdRequestValidator"/> class.
     /// </summary>
-    public CreateUserRequestValidator()
+    public GetByIdRequestValidator()
     {
         RuleFor(u => u.Id).ValidUserId();
     }
