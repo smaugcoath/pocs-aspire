@@ -3,7 +3,9 @@ using Pocs.Aspire.Business.Users.Create;
 using Pocs.Aspire.Business.Users.GetById;
 using Shouldly;
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
@@ -37,6 +39,54 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var expectedUri = new Uri(client.BaseAddress!, $"/api/users/{actual.Id}");
         response.Headers.Location.ShouldBe(expectedUri);
     }
+
+    private static readonly JsonSerializerOptions CaseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
+
+    [Fact]
+    public async Task Post_CreateUser_ReturnsBadRequestWithFieldErrors_WhenInputIsInvalid()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var invalidUser = new CreateRequest("", "", "not-an-email");
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldNotBeNull();
+        problem.Errors["FirstName"].ShouldBe(["First name is required."]);
+        problem.Errors["LastName"].ShouldBe(["Last name is required."]);
+        problem.Errors["Email"].ShouldBe(["A valid email is required."]);
+    }
+
+    [Fact]
+    public async Task Post_CreateUser_ReturnsBadRequest_WhenEmailExceedsMaxLength()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var overlongLocalPart = new string('a', 92);
+        var overlongEmail = $"{overlongLocalPart}@example.com"; // 92 + 12 = 104 chars, valid format, over the 100-char DB column limit
+        var invalidUser = new CreateRequest("Ada", "Lovelace", overlongEmail);
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldNotBeNull();
+        problem.Errors["Email"].ShouldBe(["Emails cannot exceed 100 characters."]);
+    }
+
+#pragma warning disable CA1812 // instantiated via JSON deserialization
+    private sealed record ValidationErrorsPayload(string? Title, Dictionary<string, string[]>? Errors);
+#pragma warning restore CA1812
 
     [Fact]
     public async Task Get_GetById_ReturnsOkWithUser_WhenUserExists()
