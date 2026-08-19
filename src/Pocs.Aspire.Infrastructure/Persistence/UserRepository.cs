@@ -21,7 +21,7 @@ internal class UserRepository : IUserRepository
 
     public async Task<Option<User>> GetByIdAsync(UserId id, CancellationToken cancellationToken = default)
     {
-        var result = await _context.Users.FindAsync(id, cancellationToken);
+        var result = await _context.Users.FindAsync(new object?[] { id }, cancellationToken);
 
         return result;
     }
