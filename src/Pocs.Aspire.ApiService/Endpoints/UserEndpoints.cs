@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Asp.Versioning;
+using Asp.Versioning.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +22,13 @@ public static class UsersEndpoints
 {
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("api/users");
+        var apiVersionSet = builder.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1, 0))
+            .ReportApiVersions()
+            .Build();
+
+        var group = builder.MapGroup("api/v{version:apiVersion}/users")
+            .WithApiVersionSet(apiVersionSet);
 
         group.MapPost("", Create)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -44,7 +52,7 @@ public static class UsersEndpoints
 
         return result.Case switch
         {
-            CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id }),
+            CreateResponse response => TypedResults.CreatedAtRoute(response, nameof(GetById), new { id = response.Id, version = "1" }),
             ValidationError error => error.ToValidationProblem(httpContext),
             EmailAlreadyExistsError error => TypedResults.Problem(title: error.Message, detail: error.Code, statusCode: StatusCodes.Status409Conflict),
             _ => throw new NotImplementedException()

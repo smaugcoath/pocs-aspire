@@ -28,7 +28,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var newUser = new CreateRequest("Test", "User", "test.user@example.com");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
+        var response = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
         var actual = await response.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
 
         // Assert
@@ -36,7 +36,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         response.Headers.Location.ShouldNotBeNull();
         actual.ShouldNotBeNull();
         actual.Id.ShouldNotBe(Guid.Empty);
-        var expectedUri = new Uri(client.BaseAddress!, $"/api/users/{actual.Id}");
+        var expectedUri = new Uri(client.BaseAddress!, $"/api/v1/users/{actual.Id}");
         response.Headers.Location.ShouldBe(expectedUri);
     }
 
@@ -51,7 +51,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var invalidUser = new CreateRequest("", "", "not-an-email");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+        var response = await client.PostAsJsonAsync("/api/v1/users", invalidUser, cancellationToken);
         var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
 
         // Assert
@@ -74,7 +74,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var invalidUser = new CreateRequest("Ada", "Lovelace", overlongEmail);
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/users", invalidUser, cancellationToken);
+        var response = await client.PostAsJsonAsync("/api/v1/users", invalidUser, cancellationToken);
         var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
 
         // Assert
@@ -96,14 +96,14 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var cancellationToken = TestContext.Current.CancellationToken;
         var newUser = new CreateRequest("Grace", "Hopper", "grace.hopper.getbyid@example.com");
 
-        var createResponse = await client.PostAsJsonAsync("/api/users", newUser, cancellationToken);
+        var createResponse = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
         created.ShouldNotBeNull();
 
         var expected = new GetByIdResponse(created.Id, "Grace", "Hopper", "grace.hopper.getbyid@example.com");
 
         // Act
-        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{created.Id}"), cancellationToken);
+        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{created.Id}"), cancellationToken);
         var actual = await response.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
 
         // Assert
@@ -120,7 +120,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var missingId = Guid.Parse("00000000-0000-0000-0000-0000000000aa");
 
         // Act
-        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{missingId}"), cancellationToken);
+        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{missingId}"), cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -135,11 +135,11 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var userA = new CreateRequest("Alice", "Anderson", "alice.anderson.cache@example.com");
         var userB = new CreateRequest("Bob", "Baker", "bob.baker.cache@example.com");
 
-        var createdAResponse = await client.PostAsJsonAsync("/api/users", userA, cancellationToken);
+        var createdAResponse = await client.PostAsJsonAsync("/api/v1/users", userA, cancellationToken);
         var createdA = await createdAResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
         createdA.ShouldNotBeNull();
 
-        var createdBResponse = await client.PostAsJsonAsync("/api/users", userB, cancellationToken);
+        var createdBResponse = await client.PostAsJsonAsync("/api/v1/users", userB, cancellationToken);
         var createdB = await createdBResponse.Content.ReadFromJsonAsync<CreateResponse>(cancellationToken);
         createdB.ShouldNotBeNull();
 
@@ -147,10 +147,10 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
         var expectedB = new GetByIdResponse(createdB.Id, "Bob", "Baker", "bob.baker.cache@example.com");
 
         // Act: request A, then immediately request B (within the 5s output-cache window).
-        var responseA = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{createdA.Id}"), cancellationToken);
+        var responseA = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdA.Id}"), cancellationToken);
         var actualA = await responseA.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
 
-        var responseB = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/users/{createdB.Id}"), cancellationToken);
+        var responseB = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{createdB.Id}"), cancellationToken);
         var actualB = await responseB.Content.ReadFromJsonAsync<GetByIdResponse>(cancellationToken);
 
         // Assert: each request must return its own user, not a cached response for a different id.

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,16 @@ builder.Services.AddProblemDetails(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add API versioning, applied via NewApiVersionSet()/WithApiVersionSet() on the
+// user endpoints (URL-segment versioning: /api/v1/users/...).
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
 
 builder.AddRedisOutputCache("cache");
 

@@ -26,7 +26,7 @@ public class DatabaseMigrationFunctionalTests : IClassFixture<AspireHostFixture>
         // database-initialization code (EnsureDatabaseCreation) has definitely executed
         // against the real Postgres resource before we inspect the schema directly.
         var newUser = new CreateRequest("Migration", "Check", "migration.check@example.com");
-        var warmupResponse = await _fixture.HttpClient.PostAsJsonAsync("/api/users", newUser, cancellationToken);
+        var warmupResponse = await _fixture.HttpClient.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
         warmupResponse.EnsureSuccessStatusCode();
 
         var connectionString = await _fixture.App.GetConnectionStringAsync("postgresdb", cancellationToken);
