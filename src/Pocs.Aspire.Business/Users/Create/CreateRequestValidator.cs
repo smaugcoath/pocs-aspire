@@ -11,10 +11,10 @@ public class CreateUserRequestValidator : AbstractValidator<CreateRequest>
     /// </summary>
     public CreateUserRequestValidator(IUserRepository userRepository)
     {
-        ArgumentNullException.ThrowIfNull(nameof(userRepository));
+        ArgumentNullException.ThrowIfNull(userRepository);
 
         RuleFor(u => u.FirstName).ValidFirstName();
-        RuleFor(u => u.LastName).ValidFirstName();
-        RuleFor(u => u.Email).ValidEmail(userRepository);
+        RuleFor(u => u.LastName).ValidLastName();
+        RuleFor(u => u.Email).ValidEmail();
     }
 }

@@ -15,7 +15,7 @@ public class UpdateRequestValidator : AbstractValidator<UpdateRequest>
 
         RuleFor(x => x.Id).ValidUserId();
         RuleFor(u => u.FirstName).ValidFirstName();
-        RuleFor(u => u.LastName).ValidFirstName();
-        RuleFor(u => u.Email).ValidEmail(userRepository);
+        RuleFor(u => u.LastName).ValidLastName();
+        RuleFor(u => u.Email).ValidEmail();
     }
 }
