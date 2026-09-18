@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Aspire.Hosting;
 
 namespace Pocs.Aspire.AppHost;
-public static class Program
+internal static class Program
 {
     public static async Task Main(string[] args)
     {

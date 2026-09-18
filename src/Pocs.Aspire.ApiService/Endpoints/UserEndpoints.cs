@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Users;
 
-public static class UsersEndpoints
+internal static class UsersEndpoints
 {
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {

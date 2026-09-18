@@ -8,7 +8,7 @@ namespace Pocs.Aspire.ApiService.Extensions;
 /// <summary>
 /// Provides extension methods to customize ProblemDetails.
 /// </summary>
-public static class ProblemDetailsExtensions
+internal static class ProblemDetailsExtensions
 {
     /// <summary>
     /// Converts a ValidationError into a ProblemDetails instance with custom properties.
