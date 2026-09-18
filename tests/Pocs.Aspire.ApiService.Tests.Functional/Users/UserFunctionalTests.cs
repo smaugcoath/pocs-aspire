@@ -43,6 +43,23 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
     private static readonly JsonSerializerOptions CaseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
 
     [Fact]
+    public async Task Post_CreateUser_ReturnsConflict_WhenEmailAlreadyExists()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var newUser = new CreateRequest("Margaret", "Hamilton", "margaret.hamilton.conflict@example.com");
+        var firstResponse = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
+        firstResponse.EnsureSuccessStatusCode();
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
     public async Task Post_CreateUser_ReturnsBadRequestWithFieldErrors_WhenInputIsInvalid()
     {
         // Arrange

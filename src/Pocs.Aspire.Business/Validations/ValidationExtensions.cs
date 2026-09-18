@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Pocs.Aspire.Domain.Users.ValueObjects;
 using System;
 
 namespace Pocs.Aspire.Business.Validations;
@@ -26,7 +27,7 @@ public static class ValidationExtensions
     public static IRuleBuilderOptions<T, string> ValidEmail<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
-            .EmailAddress().WithMessage("A valid email is required.")
+            .Must(Email.IsValid).WithMessage("A valid email is required.")
             .MaximumLength(100).WithMessage("Emails cannot exceed 100 characters.");
     }
 }

@@ -11,6 +11,11 @@ namespace Pocs.Aspire.Domain.Users;
 public class User
 {
     /// <summary>
+    /// The database name of the unique index enforcing email uniqueness.
+    /// </summary>
+    public const string EmailUniqueIndexName = "IX_User_Email";
+
+    /// <summary>
     /// Gets the unique identifier for the user.
     /// </summary>
     public UserId Id { get; init; }
