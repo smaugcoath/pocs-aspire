@@ -10,14 +10,14 @@ product.
 
 - **Aspire orchestration with a startup dependency.** The AppHost declares
   Postgres, Redis, and the API as resources, and gates the API on the
-  Postgres database being ready before it starts (`src/Pocs.Aspire.AppHost/Program.cs`).
+  Postgres database and Redis being ready before it starts (`src/Pocs.Aspire.AppHost/Program.cs`).
 - **Clean Architecture with dependencies pointing inward.** `Domain` carries no
   project reference to `Infrastructure` or `ApiService` and depends on no
   EF Core or ASP.NET package (`src/Pocs.Aspire.Domain/Pocs.Aspire.Domain.csproj`).
 - **Expected failures as values, not exceptions.** Business services return
   `LanguageExt.Either<Failure, TResponse>`; endpoints pattern-match the result
   into the matching HTTP status (`src/Pocs.Aspire.Domain/Errors/Errors.cs`,
-  `src/Pocs.Aspire.ApiService/Endpoints/UserEndpoints.cs`).
+  `src/Pocs.Aspire.ApiService/Endpoints/UsersEndpoints.cs`).
 - **Value objects with EF Core value conversions.** Identity, names, and email
   are typed value objects, mapped to plain columns via `HasConversion`
   (`src/Pocs.Aspire.Domain/Users/ValueObjects/`,
@@ -26,9 +26,9 @@ product.
   (`context.Database.Migrate()` in
   `src/Pocs.Aspire.Infrastructure/HostApplicationBuilderCollectionExtensions.cs`).
 - **URL-segment API versioning**, routes live under `api/v1/users`
-  (`src/Pocs.Aspire.ApiService/Endpoints/UserEndpoints.cs`).
+  (`src/Pocs.Aspire.ApiService/Endpoints/UsersEndpoints.cs`).
 - **Redis output caching on a read route**, keyed with `SetVaryByRouteValue("id")`
-  on the single-user GET (`src/Pocs.Aspire.ApiService/Endpoints/UserEndpoints.cs`).
+  on the single-user GET (`src/Pocs.Aspire.ApiService/Endpoints/UsersEndpoints.cs`).
 - **Three test layers, weighted toward the real thing.** Functional tests run
   the actual Aspire app via `Aspire.Hosting.Testing`; integration tests hit a
   real Postgres via Testcontainers; unit tests (NSubstitute) are reserved for
@@ -41,7 +41,6 @@ Prerequisites:
 
 - .NET 8 SDK
 - Docker or Podman
-- That's it — no other services to install
 
 ```shell
 dotnet run --project src/Pocs.Aspire.AppHost
@@ -101,8 +100,7 @@ pattern-matches that `Either<Failure, CreateResponse>` into `201 Created`
   (`ValidationError`, `EmailAlreadyExistsError`, `NotFoundError`) are modeled
   as `Either<Failure, T>` values and pattern-matched at the endpoint, so the
   failure path is visible in the method signature. Trade-off: every endpoint
-  carries a `switch` over `result.Case` and an unreachable `NotImplementedException`
-  default arm.
+  carries a `switch` over `result.Case` that has to cover every `Failure` type.
 - **Value objects over primitives.** `UserId`, `FirstName`, `LastName`, and
   `Email` validate on construction instead of relying on scattered checks.
   Trade-off: each one needs an explicit EF Core `HasConversion` to and from
@@ -144,7 +142,7 @@ Humans decide, review, and merge.
 - Authentication and authorization — no identity provider or auth middleware
   is wired in yet
 - Delete and List endpoints for users — only Create, Update, and GetById exist
-  today (`src/Pocs.Aspire.ApiService/Endpoints/UserEndpoints.cs`)
+  today (`src/Pocs.Aspire.ApiService/Endpoints/UsersEndpoints.cs`)
 - A second service with inter-service messaging, to explore that side of Aspire
 - Upgrade to .NET 10 and Aspire 13 — currently `net8.0` and Aspire 9.1.0
 - Architecture tests, to enforce the dependency direction in CI rather than by convention
