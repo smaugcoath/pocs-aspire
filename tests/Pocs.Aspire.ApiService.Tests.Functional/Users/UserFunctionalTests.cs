@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace Pocs.Aspire.ApiService.Tests.Functional.Users;
 
-public class UserFunctionalTests : IClassFixture<AspireHostFixture>
+[Collection(SharedAspireHost.Name)]
+public class UserFunctionalTests
 {
     private readonly AspireHostFixture _fixture;
 
