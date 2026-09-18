@@ -244,12 +244,24 @@ public class UserRepositoryTests : IAsyncLifetime
     public async Task EmailExistsExceptForUser_ReturnsFalse_WhenNoUserHasTheEmail()
     {
         // Arrange
+        var other = User.From(
+            UserId.New(),
+            FirstName.From("Melba"),
+            LastName.From("Roy"),
+            Email.From("melba.roy.emailexists@example.com"));
+
+        await using (var seedContext = new AppDbContext(DbContextOptions))
+        {
+            seedContext.Add(other);
+            await seedContext.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
         await using var context = new AppDbContext(DbContextOptions);
         var repository = new UserRepository(context);
         var email = Email.From("no.one.emailexists@example.com");
 
         // Act
-        var result = await repository.EmailExistsExceptForUser(email, null, TestContext.Current.CancellationToken);
+        var result = await repository.EmailExistsExceptForUser(email, other.Id, TestContext.Current.CancellationToken);
 
         // Assert
         result.ShouldBeFalse();

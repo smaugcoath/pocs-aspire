@@ -54,9 +54,13 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
 
         // Act
         var response = await client.PostAsJsonAsync("/api/v1/users", newUser, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemPayload>(CaseInsensitiveJson, cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        problem.ShouldNotBeNull();
+        problem.Title.ShouldBe("The email margaret.hamilton.conflict@example.com already exists.");
+        problem.Detail.ShouldBe("ERR-003");
     }
 
     [Fact]
@@ -103,6 +107,7 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
 
 #pragma warning disable CA1812 // instantiated via JSON deserialization
     private sealed record ValidationErrorsPayload(string? Title, Dictionary<string, string[]>? Errors);
+    private sealed record ProblemPayload(string? Title, string? Detail);
 #pragma warning restore CA1812
 
     [Fact]
@@ -141,6 +146,24 @@ public class UserFunctionalTests : IClassFixture<AspireHostFixture>
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Get_GetById_ReturnsBadRequest_WhenIdIsEmpty()
+    {
+        // Arrange
+        var client = _fixture.HttpClient;
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        // Act
+        var response = await client.GetAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{Guid.Empty}"), cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationErrorsPayload>(CaseInsensitiveJson, cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.ShouldNotBeNull();
+        problem.Errors.ShouldNotBeNull();
+        problem.Errors["Id"].ShouldBe(["Id is required and must be a valid guid format."]);
     }
 
     [Fact]

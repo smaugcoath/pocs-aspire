@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Pocs.Aspire.Business.Users.Create;
 using Pocs.Aspire.Business.Users.GetById;
 using Pocs.Aspire.Business.Users.Update;
@@ -78,14 +77,7 @@ public class UserUpdateFunctionalTests : IClassFixture<AspireHostFixture>
     private sealed record ProblemPayload(string? Title, string? Detail);
 #pragma warning restore CA1812
 
-    /// <summary>
-    /// Blocked on a production bug: <c>UsersEndpoints.Update</c>'s <c>result.Case</c> switch has no
-    /// arm for <c>NotFoundError</c> (unlike <c>GetById</c>'s), so it falls through to
-    /// <c>throw new NotImplementedException()</c> and the host's exception handler turns that into a
-    /// 500, not a 404. Confirmed by running this test unskipped. Needs a src/ change (add a
-    /// <c>NotFoundError</c> arm to that switch, mirroring <c>GetById</c>) that is out of scope here.
-    /// </summary>
-    [Fact(Skip = "Update endpoint has no NotFoundError case in its result.Case switch; returns 500, not 404. See src/Pocs.Aspire.ApiService/Endpoints/UsersEndpoints.cs Update method.")]
+    [Fact]
     public async Task Put_UpdateUser_ReturnsNotFound_WhenUserDoesNotExist()
     {
         // Arrange
@@ -96,9 +88,13 @@ public class UserUpdateFunctionalTests : IClassFixture<AspireHostFixture>
 
         // Act
         var response = await client.PutAsJsonAsync(new Uri(client.BaseAddress!, $"/api/v1/users/{missingId}"), updateRequest, cancellationToken);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemPayload>(CaseInsensitiveJson, cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        problem.ShouldNotBeNull();
+        problem.Title.ShouldBe("Entity 'User' was not found.");
+        problem.Detail.ShouldBe("ERR-001");
     }
 
     [Fact]
