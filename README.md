@@ -45,22 +45,6 @@ More information about prerequisites is available in the [.NET Aspire documentat
 dotnet run --project src/Pocs.Aspire.AppHost
 ```
 1. Access the .NET Aspire dashboard at the provided URL.
-```ps
-PS C:\repos\pocs-aspire> dotnet run --project src\Pocs.Aspire.AppHost
-Building...
-info: Aspire.Hosting.DistributedApplication[0]
-      Aspire version: 9.1.0+2a8f48ea5811f317a26405eb315aa315cc9e3cea
-info: Aspire.Hosting.DistributedApplication[0]
-      Distributed application starting.
-info: Aspire.Hosting.DistributedApplication[0]
-      Application host directory is: C:\repos\pocs-aspire\src\Pocs.Aspire.AppHost
-info: Aspire.Hosting.DistributedApplication[0]
-      Now listening on: https://localhost:17131
-info: Aspire.Hosting.DistributedApplication[0]
-      Login to the dashboard at https://localhost:17131/login?t=d9664bcb59521f89eb22ef9db8ed2306
-info: Aspire.Hosting.DistributedApplication[0]
-      Distributed application started. Press Ctrl+C to shut down.
-```
 
 The dashboard will show the status of all the services included in the solution and the URLs to access them.
 For instance, click on the REST API service to access swagger to test it.
