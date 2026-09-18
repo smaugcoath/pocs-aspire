@@ -1,0 +1,13 @@
+{
+  "name": "pocs-aspire",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "postCreateCommand": "dotnet tool restore && dotnet restore Pocs.Aspire.sln",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-dotnettools.csdevkit"]
+    }
+  }
+}
