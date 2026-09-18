@@ -1,8 +1,7 @@
-﻿
+﻿using FluentValidation;
+using System;
 
 namespace Pocs.Aspire.Business.Validations;
-using FluentValidation;
-using System;
 
 public static class ValidationExtensions
 {

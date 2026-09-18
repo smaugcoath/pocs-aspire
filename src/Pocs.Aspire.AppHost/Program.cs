@@ -26,7 +26,8 @@ internal static class Program
         builder.AddProject<Projects.Pocs_Aspire_ApiService>("apiservice")
             .WithReference(postgresDb)
             .WaitFor(postgresDb)
-            .WithReference(cache);
+            .WithReference(cache)
+            .WaitFor(cache);
 
 
         var app = builder.Build();

@@ -16,11 +16,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pocs.Aspire.ApiService.Users;
+namespace Pocs.Aspire.ApiService.Endpoints;
 
 internal static class UsersEndpoints
 {
-    public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapUsersEndpoints(this IEndpointRouteBuilder builder)
     {
         var apiVersionSet = builder.NewApiVersionSet()
             .HasApiVersion(new ApiVersion(1, 0))

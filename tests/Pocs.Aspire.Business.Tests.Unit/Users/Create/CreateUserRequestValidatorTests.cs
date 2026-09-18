@@ -10,7 +10,7 @@ using System;
 /// <c>IUserRepository</c> via DI, so a null repository can only ever be exercised
 /// by constructing the validator directly.
 /// </summary>
-public class CreateRequestValidatorTests
+public class CreateUserRequestValidatorTests
 {
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenUserRepositoryIsNull()

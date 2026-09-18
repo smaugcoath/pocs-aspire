@@ -13,7 +13,7 @@ internal static class ProblemDetailsExtensions
     /// <summary>
     /// Converts a ValidationError into a ProblemDetails instance with custom properties.
     /// </summary>
-    /// <param name="exception">The validation error containing domain errors.</param>
+    /// <param name="error">The validation error containing domain errors.</param>
     /// <param name="httpContext">The current HttpContext.</param>
     /// <returns>A ProblemDetails instance representing the validation errors.</returns>
     public static ValidationProblem ToValidationProblem(this ValidationError error, HttpContext httpContext)

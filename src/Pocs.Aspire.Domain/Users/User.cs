@@ -3,7 +3,7 @@
 namespace Pocs.Aspire.Domain.Users;
 
 /// <summary>
-/// Represents an user.
+/// Represents a user.
 /// </summary>
 /// <remarks>
 /// This aggregate root includes identity and personal information for a user.
